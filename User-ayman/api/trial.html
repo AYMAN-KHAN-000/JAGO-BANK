@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JAGO VCC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="https://i.pinimg.com/originals/be/d2/aa/bed2aa89858a9a73319a3b587f8d620b.png" type="image/x-icon">
+  <style>
+  :root{
+    --bg:#1a1407; /* deep brownish-yellow */
+    --panel:#3b2e0b; /* slightly lighter */
+    --accent:#f5c22f; /* vivid yellow/gold */
+    --muted:#d4c18a; /* soft yellowish text */
+    --glass: rgba(255,255,255,0.05);
+    --card-grad: linear-gradient(135deg,#3b2e0b 0%, #5c4810 60%, #7b5f16 100%);
+    --glass-2: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;color:var(--muted);background:linear-gradient(180deg,#120f03 0%,var(--bg) 100%);}
+  .wrap{max-width:1200px;margin:32px auto;padding:24px;display:grid;grid-template-columns:1fr 420px;gap:24px}
+  .panel{background:var(--panel);border-radius:14px;padding:35px;box-shadow:0 6px 30px rgba(0,0,0,0.5);}
+
+  header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .brand{display:flex;flex-direction:column}
+  .brand h1{margin:0;font-size:20px;color:#fff5c2;font-weight:700}
+  .brand p{margin:0;font-size:13px;color:var(--muted)}
+
+  .usage-list{display:flex;flex-direction:column;gap:12px}
+  .usage-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter:blur(6px);}
+  .usage-item .meta{display:flex;gap:12px;align-items:center}
+  .avatar{width:44px;height:44px;border-radius:10px;background:var(--glass);display:grid;place-items:center;font-weight:700;color:#fff5c2}
+  .meta .txt{display:flex;flex-direction:column}
+  .meta .txt .title{font-weight:600;color:#fff8d1}
+  .meta .txt .sub{font-size:12px;color:var(--muted)}
+  .amount{font-weight:700}
+
+  .stats{display:flex;gap:12px;margin-bottom:14px}
+  .stat{flex:1;padding:12px;border-radius:10px;background:var(--glass);}
+  .stat h3{margin:0;color:#fff8d1}
+  .stat p{margin:6px 0 0;color:var(--muted)}
+
+  .right-col{display:flex;flex-direction:column;gap:14px}
+  .card-mock{height:220px;border-radius:16px;padding:18px;color:#fff5c2;background:var(--card-grad);position:relative;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+  .chip{width:49px;height:35px;border-radius:6px;background:linear-gradient(180deg,#f5e1a3,#c9a83a);display:inline-block}
+  .visa{position:absolute;right:18px;bottom:18px;font-weight:800;background:rgba(255,255,255,0.06);padding:6px 10px;border-radius:8px;color:#fff5c2}
+  .card-number{letter-spacing:3px;font-size:20px;margin-top:22px}
+  .card-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+  .small{font-size:12px;color:rgba(255,245,194,0.7)}
+
+  .card-controls{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:12px;background:var(--glass-2)}
+  .balance{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));}
+  .balance .value{font-weight:800;color:#fff5c2;font-size:18px}
+  .btn{background:var(--accent);border:none;color:white;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+
+  .form-row{display:flex;gap:8px}
+  input[type=text], input[type=number]{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.05);padding:10px;border-radius:8px;color:var(--muted)}
+
+  .tx-table{width:100%;border-collapse:collapse;margin-top:8px}
+  .tx-table thead th{color:var(--muted);text-align:left;padding:10px;font-size:13px}
+  .tx-table tbody td{padding:10px;border-top:1px solid rgba(255,255,255,0.02)}
+
+  .muted{color:var(--muted)}
+
+  @media (max-width:920px){
+    .wrap{grid-template-columns:1fr; padding:16px}
+    .right-col{order:-1}
+  }
+</style>
+
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <header>
+        <div class="brand">
+          <h1>VCC Management</h1>
+          <p>Secure. Simple. Slightly dramatic — in a good way.</p>
+        </div>
+      </header>
+
+      <div class="stats">
+        <div class="stat">
+          <h3 id="stat-balance-small">Balance: ৳0.00</h3>
+          <p>Total available across cards</p>
+        </div>
+        <div class="stat">
+          <h3 id="stat-spent">Spent: ৳0.00</h3>
+          <p>Monthly outgoing</p>
+        </div>
+      </div>
+
+      <h3 style="color:#dfefff;margin-bottom:10px">Transaction History</h3>
+<div class="usage-list" id="tx-list">
+
+  <div class="tx-item" style="background:rgba(255,255,255,0.06);border-radius:10px;padding:12px;margin-bottom:8px;color:#dfefff;">
+    <div style="display:flex;justify-content:space-between;">
+      <span>Spotify Subscription</span>
+      <span>- $0.99</span>
+    </div>
+    <small style="color:#000000;">Oct 17, 2025 • VISA • Completed</small>
+  </div>
+
+  <div class="tx-item" style="background:rgba(255,255,255,0.06);border-radius:10px;padding:12px;margin-bottom:8px;color:#dfefff;">
+    <div style="display:flex;justify-content:space-between;">
+      <span>Steam Wallet Top-Up</span>
+      <span>- $20.99</span>
+    </div>
+    <small style="color:#000000;">Oct 16, 2025 • VISA • Completed</small>
+  </div>
+
+  <div class="tx-item" style="background:rgba(255,255,255,0.06);border-radius:10px;padding:12px;margin-bottom:8px;color:#dfefff;">
+    <div style="display:flex;justify-content:space-between;">
+      <span>Money Added via bKash</span>
+      <span>+ ৳130</span>
+    </div>
+    <small style="color:#000000;">Oct 15, 2025 • bKash • Success</small>
+  </div>
+
+  <div class="tx-item" style="background:rgba(255,255,255,0.06);border-radius:10px;padding:12px;margin-bottom:8px;color:#dfefff;">
+    <div style="display:flex;justify-content:space-between;">
+      <span>Netflix Trial</span>
+      <span>- $0.99</span>
+    </div>
+    <small style="color:#000000;">Oct 13, 2025 • VISA • Completed</small>
+  </div>
+
+
+
+</div>
+
+
+
+    </div>
+
+    <div class="panel right-col">
+      <div class="card-mock" id="card-mock">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <img class="chip" style="rotate: 90;" src="https://th.bing.com/th/id/R.06e5bac4a578f2ca22d178eaaf90f807?rik=67II4f1JY2zkYg&riu=http%3a%2f%2fwww.pngmart.com%2ffiles%2f4%2fChip-PNG-Transparent.png&ehk=8hlrRuSUMEO9yZNK%2bc0CUKIduH2tQabZ9TKGkn3gH%2f8%3d&risl=&pid=ImgRaw&r=0">
+          <div class="small muted">VIRTUAL • NON-PHYSICAL</div>
+        </div>
+
+        <div class="card-number" id="card-number">4889 5060 8547 0742</div>
+
+        <div class="card-row">
+          <div>
+            <div class="small">Card Holder</div>
+            <div style="font-weight:700;color:#eaf4ff">AYMAN KHAN</div>
+          </div>
+          <div>
+            <div class="small">Expires</div>
+            <div id="card-exp" style="font-weight:700;color:#eaf4ff">10/30</div>
+          </div>
+          <div>
+            <div class="small">CVV</div>
+            <div id="card-cvv" style="font-weight:700;color:#eaf4ff">594</div>
+          </div>
+        </div>
+
+        <div class="visa">VISA</div>
+      </div>
+
+      <div class="card-controls">
+        <div class="balance">
+          <div>
+            <div class="small">Available Balance</div>
+            <div class="value" id="balance">$0</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small muted">Last top-up</div>
+            <div id="last-topup" class="muted">—</div>
+          </div>
+        </div>
+        
+
+ 
+
+  
+
+      </div>
+      <h3>Add money</h3>
+      <!-- Single field with copy button -->
+<div class="copy-field" style="
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background:rgba(255,255,255,0.06);
+  border: 1px solid #8f5d02;
+  border-radius: 10px;
+  padding: 10px 12px;
+  max-width: 400px;
+  color: #dfefff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+">
+  <input
+    id="vcc-number"
+    type="text"
+    value="4889506085470742"
+    readonly
+    style="
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #dfefff;
+      font-size: 16px;
+      letter-spacing: 1.5px;
+      outline: none;
+      cursor: default;
+    "
+  />
+  <button
+    class="copy-btn"
+    data-target="vcc-number"
+    style="
+      background: #aa8200;
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    "
+    onmouseover="this.style.background='#2c81ff'"
+    onmouseout="this.style.background='#1f6feb'"
+  >
+    Copy
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll(".copy-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const targetId = btn.getAttribute("data-target");
+      const input = document.getElementById(targetId);
+      try {
+        await navigator.clipboard.writeText(input.value);
+        btn.textContent = "Copied!";
+        btn.style.background = "#0b2340";
+        setTimeout(() => {
+          btn.textContent = "Copy";
+          btn.style.background = "#1f6feb";
+        }, 1000);
+      } catch (err) {
+        alert("Copy failed. Please copy manually.");
+      }
+    });
+  });
+</script>
+
+    </div>
+  </div>
+
+
+</body>
+</html>
